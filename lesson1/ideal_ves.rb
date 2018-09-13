@@ -4,8 +4,10 @@ name = gets.chomp
 puts 'Ваш рост?'
 rost = gets.to_i
 
-if rost - 110 > 0
-	puts "#{name}, Ваш идеальный вес - #{rost - 110} кг."
+ideal = rost - 110
+
+if ideal > 0
+	puts "#{name}, Ваш идеальный вес - #{ideal} кг."
 else
 	puts 'Ваш вес оптимальный.'
 end
