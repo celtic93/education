@@ -3,37 +3,11 @@ day = gets.to_i
 month = gets.to_i
 year = gets.to_i
 
-if year % 400 == 0
-  puts 'Высокосный'
-  n = 1
-elsif year % 100 == 0
-  puts 'Невысокосный'
-  n = 0
-elsif year % 4 == 0  
-  puts 'Высокосный'
-  n = 1
-else
-  puts 'Невысокосный'
-  n = 0
-end
+is_leaf = year % 400 == 0 || year % 4 == 0
 
-months = {
-  1 => 31,
-  2 => 28+n,
-  3 => 31,
-  4 => 30,
-  5 => 31,
-  6 => 30,
-  7 => 31,
-  8 => 31,
-  9 => 30,
-  10 => 31,
-  11 => 30,
-  12 => 31
-}
+months = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+months[2] = 29 if is_leaf
 
-(1..month-1).each do |days|
-  day += months[days]
-end
+date = months[0...month].sum + day
 
-puts day
+puts date

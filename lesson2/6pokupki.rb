@@ -1,28 +1,27 @@
-pokupki = {}
+goods = {}
 
 loop do  
   puts 'Введите товар, цену и количество товара. Когда закончите, введите stop'
-  tovar = gets.chomp
+  product = gets.chomp
 
-  if tovar == 'stop'
+  if product == 'stop'
     break
   end
-
-  cost_colvo = {}
+  
   cost = gets.to_f
-  kolvo = gets.to_f
+  number = gets.to_f
 
-  cost_colvo[cost] = kolvo
-  pokupki[tovar] = cost_colvo
+  records = {cost: cost, number: number}
+  goods[product] = records
 end
 
-puts pokupki
+puts goods
 
 sum_all = 0
 
-pokupki.each_pair do |tovar2, cost_colvo2|
-  sum = cost_colvo2.to_a[0][0]*cost_colvo2.to_a[0][1]
-  puts "Общая сумма за #{tovar2} равняется #{sum}"
+goods.each_pair do |product2, records2|
+  sum = records2[:cost]*records2[:number]
+  puts "Общая сумма за #{product2} равняется #{sum}"
   sum_all += sum
 end
 

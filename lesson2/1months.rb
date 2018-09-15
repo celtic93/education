@@ -13,8 +13,8 @@ months = {
   'Dec' => 31
 }
 
-months.to_a.each do |month|
-  if month[1] == 30
-    puts month[0]
+months.each do |month, days|
+  if days == 30
+    puts month
   end
 end
