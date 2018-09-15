@@ -19,9 +19,9 @@ puts goods
 
 sum_all = 0
 
-goods.each_pair do |product2, records2|
-  sum = records2[:cost]*records2[:number]
-  puts "Общая сумма за #{product2} равняется #{sum}"
+goods.each_pair do |product, records|
+  sum = records[:cost]*records[:number]
+  puts "Общая сумма за #{product} равняется #{sum}"
   sum_all += sum
 end
 
