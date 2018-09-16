@@ -91,7 +91,7 @@ class Train
   #метод просто увеличивает или уменьшает количество вагонов).
   #Прицепка/отцепка вагонов может осуществляться только если поезд не движется.
   def plus
-    if @speed > 0
+    if @speed = 0
       @carriages += 1
     else
       puts 'Stop the train!'
@@ -99,7 +99,7 @@ class Train
   end
 
   def minus
-    if @speed > 0
+    if @speed = 0
       @carriages -= 1
     else
       puts 'Stop the train!'
