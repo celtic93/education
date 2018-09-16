@@ -14,21 +14,19 @@ class Station
   end
 
   #Может возвращать список всех поездов на станции, находящиеся в текущий момент
-  def list
-    @trains.each {|train| puts train.num}
-    
+  def trains_list
+    @trains    
   end
 
   #Может отправлять поезда (по одному за раз, при этом,
   #поезд удаляется из списка поездов, находящихся на станции).
   def departure(train)
-    @trains.delete(train)
-    
+    @trains.delete(train)    
   end
 
   #Может возвращать список поездов на станции по типу (см. ниже): кол-во грузовых, пассажирских
   def trains_type(type)
-    @trains.each {|train| puts train.num if train.type == type }
+    @trains.select {|train| train if train.type == type }
   end
 end
 
@@ -62,7 +60,7 @@ end
 class Train
   #Может возвращать количество вагонов
   #Возвращать текущую станцию на основе маршрута
-  attr_reader :carriages, :stations, :current, :num, :type
+  attr_reader :carriages, :stations, :current_station, :num, :type
 
   #Может возвращать текущую скорость
   #Может набирать скорость
@@ -90,7 +88,7 @@ class Train
   #Может прицеплять/отцеплять вагоны (по одному вагону за операцию,
   #метод просто увеличивает или уменьшает количество вагонов).
   #Прицепка/отцепка вагонов может осуществляться только если поезд не движется.
-  def plus
+  def add_carriage
     if @speed = 0
       @carriages += 1
     else
@@ -98,9 +96,13 @@ class Train
     end
   end
 
-  def minus
+  def remove_carriage
     if @speed = 0
-      @carriages -= 1
+      if @carriages > 0
+        @carriages -= 1
+      else
+        puts 'No carriages'
+      end
     else
       puts 'Stop the train!'
     end
@@ -108,40 +110,44 @@ class Train
 
   #Может принимать маршрут следования (объект класса Route). При назначении маршрута
   #поезду, поезд автоматически помещается на первую станцию в маршруте
-  def route(route)
-    @stations[@index].departure(self) if @current != nil
+  def set_route(route)
+    @stations[@index].departure(self) if @current_station != nil
     @stations = route.stations
     @index = 0
-    @current = @stations[@index].name
+    @current_station = @stations[@index]
     @stations[@index].arrival(self)
   end
 
   #Может перемещаться между станциями, указанными в маршруте. 
   #Перемещение возможно вперед и назад, но только на 1 станцию за раз.
-  def forward
+  def move_forward
     if @index+1 != @stations.size
       @stations[@index].departure(self)
       @index += 1
-      @current = @stations[@index].name
+      @current_station = @stations[@index]
       @stations[@index].arrival(self)
     else
       puts 'It is the last station'
     end
   end
 
-  def backward
+  def move_backward
     if @index != 0
       @stations[@index].departure(self)
       @index -= 1
-      @current = @stations[@index].name
+      @current_station = @stations[@index]
       @stations[@index].arrival(self)
     else
       puts 'It is the first station'
     end
   end
 
-  #Возвращать предыдущую станцию, следующую, на основе маршрута
-  def next
+  #Возвращать предыдущую станцию, текущую, следующую, на основе маршрута
+  def current_station
+    @current_station
+  end
+  
+  def next_station
     if @index+1 != @stations.size
       @stations[@index+1]
     else
@@ -149,7 +155,7 @@ class Train
     end
   end
 
-  def previous
+  def previous_station
     if @index != 0
       @stations[@index-1]
     else
