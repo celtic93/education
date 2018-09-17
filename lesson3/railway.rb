@@ -26,7 +26,7 @@ class Station
 
   #Может возвращать список поездов на станции по типу (см. ниже): кол-во грузовых, пассажирских
   def trains_type(type)
-    @trains.select {|train| train if train.type == type }
+    @trains.select {|train| train.type == type }
   end
 end
 
@@ -89,7 +89,7 @@ class Train
   #метод просто увеличивает или уменьшает количество вагонов).
   #Прицепка/отцепка вагонов может осуществляться только если поезд не движется.
   def add_carriage
-    if @speed = 0
+    if @speed == 0
       @carriages += 1
     else
       puts 'Stop the train!'
@@ -97,15 +97,10 @@ class Train
   end
 
   def remove_carriage
-    if @speed = 0
-      if @carriages > 0
-        @carriages -= 1
-      else
-        puts 'No carriages'
-      end
-    else
-      puts 'Stop the train!'
-    end
+    return puts 'Stop the train!' unless @speed == 0
+    return puts 'No carriages' if @carriages <= 0
+    
+    @carriages -= 1
   end
 
   #Может принимать маршрут следования (объект класса Route). При назначении маршрута
