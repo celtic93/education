@@ -9,8 +9,9 @@ class Train
 
   #Имеет номер (произвольная строка) и тип (грузовой, пассажирский)
   #и количество вагонов, эти данные указываются при создании экземпляра класса
-  def initialize(num)      
+  def initialize(num, type)      
     @num = num
+    @type = type
     @speed = 0
     @carriages = []
   end
@@ -40,7 +41,9 @@ class Train
     return puts 'Stop the train!' unless @speed == 0
     return puts 'No carriages' if @carriages == []
     
-    @carriages.delete_at(-1)
+    carriage = @carriages.last
+    @carriages.delete(carriage)
+    $carriages_depot[self.type] << carriage
   end
 
   #Может принимать маршрут следования (объект класса Route). При назначении маршрута

@@ -15,10 +15,7 @@ class Station
 
   #Может возвращать список всех поездов на станции, находящиеся в текущий момент
   def trains_list
-    index = 1
-    @trains.each do |train| 
-      puts "#{index}. Поезд номер #{train.num}"
-    end    
+    @trains.each_with_index {|train, index| puts "#{index}. Поезд номер #{train.num}"}  
   end
 
   #Может отправлять поезда (по одному за раз, при этом,
@@ -31,5 +28,4 @@ class Station
   def trains_type(type)
     @trains.select {|train| train.type == type }
   end
-
 end
