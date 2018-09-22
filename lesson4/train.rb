@@ -1,17 +1,18 @@
 class Train
   #Может возвращать количество вагонов
   #Возвращать текущую станцию на основе маршрута
-  attr_reader :carriages, :stations, :current_station, :num, :type
+  attr_reader :carriages, :stations, :current_station, :num, :type, :carriages
 
   #Может возвращать текущую скорость
   #Может набирать скорость
-  attr_accessor :speed, 
+  attr_accessor :speed  
 
   #Имеет номер (произвольная строка) и тип (грузовой, пассажирский)
   #и количество вагонов, эти данные указываются при создании экземпляра класса
   def initialize(num)      
     @num = num
     @speed = 0
+    @carriages = []
   end
 
   #Может набирать скорость
@@ -27,9 +28,9 @@ class Train
   #Может прицеплять/отцеплять вагоны (по одному вагону за операцию,
   #метод просто увеличивает или уменьшает количество вагонов).
   #Прицепка/отцепка вагонов может осуществляться только если поезд не движется.
-  def add_carriage
+  def add_carriage(carriage)
     if @speed == 0
-      @carriages += 1
+      @carriages << carriage
     else
       puts 'Stop the train!'
     end
@@ -37,9 +38,9 @@ class Train
 
   def remove_carriage
     return puts 'Stop the train!' unless @speed == 0
-    return puts 'No carriages' if @carriages <= 0
+    return puts 'No carriages' if @carriages == []
     
-    @carriages -= 1
+    @carriages.delete_at(-1)
   end
 
   #Может принимать маршрут следования (объект класса Route). При назначении маршрута
@@ -52,6 +53,9 @@ class Train
     @stations[@index].arrival(self)
   end
 
+  def on_route?
+    true unless @stations == nil
+  end
   #Может перемещаться между станциями, указанными в маршруте. 
   #Перемещение возможно вперед и назад, но только на 1 станцию за раз.
   def move_forward

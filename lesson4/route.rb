@@ -1,5 +1,5 @@
 class Route
-  attr_reader :stations
+  attr_reader :stations, :last, :first
   #Имеет начальную и конечную станцию, а также список промежуточных станций. 
   #Начальная и конечная станции указываютсся при создании маршрута,
   #а промежуточные могут добавляться между ними.
@@ -21,6 +21,10 @@ class Route
 
   #Может выводить список всех станций по-порядку от начальной до конечной
   def list_stations
-    @stations.each {|station| puts station.name }
+    index = 1
+    @stations.each do |station| 
+      puts "#{index} #{station.name}"
+      index += 1
+    end
   end
 end
