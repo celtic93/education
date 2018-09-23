@@ -7,6 +7,8 @@ class Train
   #Может набирать скорость
   attr_accessor :speed  
 
+
+  @@carriages_depot = {:cargo => [], :passenger => []}
   #Имеет номер (произвольная строка) и тип (грузовой, пассажирский)
   #и количество вагонов, эти данные указываются при создании экземпляра класса
   def initialize(num, type)      
@@ -29,21 +31,25 @@ class Train
   #Может прицеплять/отцеплять вагоны (по одному вагону за операцию,
   #метод просто увеличивает или уменьшает количество вагонов).
   #Прицепка/отцепка вагонов может осуществляться только если поезд не движется.
-  def add_carriage(carriage)
-    if @speed == 0
-      @carriages << carriage
+  def add_carriage(type)
+    return puts 'Stop the train!' unless @speed == 0
+
+    if @@carriages_depot[type].empty?
+      @carriages << Carriage.new(type)
     else
-      puts 'Stop the train!'
+      carriage = @@carriages_depot[type].last
+      @carriages << carriage
+      @@carriages_depot[type].delete(carriage)
     end
   end
 
   def remove_carriage
     return puts 'Stop the train!' unless @speed == 0
-    return puts 'No carriages' if @carriages == []
+    return puts 'No carriages' if @carriages.empty?
     
     carriage = @carriages.last
     @carriages.delete(carriage)
-    $carriages_depot[self.type] << carriage
+    @@carriages_depot[self.type] << carriage
   end
 
   #Может принимать маршрут следования (объект класса Route). При назначении маршрута
