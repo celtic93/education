@@ -1,4 +1,9 @@
+require_relative 'manufacturer'
+require_relative 'instance_counter'
+
 class Train
+  include Manufacturer
+  include InstanceCounter
   #Может возвращать количество вагонов
   #Возвращать текущую станцию на основе маршрута
   attr_reader :carriages, :stations, :current_station, :num, :type, :carriages
@@ -8,7 +13,13 @@ class Train
   attr_accessor :speed  
 
 
+  def self.find(num)
+    @@trains.select {|train| train.num == num}
+  end
+
   @@carriages_depot = {:cargo => [], :passenger => []}
+
+  @@trains = []
   #Имеет номер (произвольная строка) и тип (грузовой, пассажирский)
   #и количество вагонов, эти данные указываются при создании экземпляра класса
   def initialize(num, type)      
@@ -16,6 +27,8 @@ class Train
     @type = type
     @speed = 0
     @carriages = []
+    @@trains << self
+    #register_instance
   end
 
   #Может набирать скорость

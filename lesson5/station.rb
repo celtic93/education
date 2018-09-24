@@ -2,10 +2,16 @@ class Station
   
   attr_reader :name
   
+  def self.all
+    @@stations
+  end
+
+  @@stations = []
   #Имеет название, которое указывается при ее создании
   def initialize(name)      
     @name = name
     @trains = []
+    @@stations << self
   end
 
   #Может принимать поезда (по одному за раз)
