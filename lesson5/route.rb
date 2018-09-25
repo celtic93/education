@@ -1,4 +1,6 @@
 class Route
+  include InstanceCounter
+  
   attr_reader :stations, :last, :first
   #Имеет начальную и конечную станцию, а также список промежуточных станций. 
   #Начальная и конечная станции указываютсся при создании маршрута,
@@ -7,6 +9,7 @@ class Route
     @first = first
     @last = last
     @stations = [@first, @last]
+    self.register_instance
   end
 
   #Может добавлять промежуточную станцию в список

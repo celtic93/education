@@ -28,7 +28,7 @@ class Train
     @speed = 0
     @carriages = []
     @@trains << self
-    #register_instance
+    self.register_instance
   end
 
   #Может набирать скорость

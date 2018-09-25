@@ -1,4 +1,5 @@
 class Station
+  include InstanceCounter
   
   attr_reader :name
   
@@ -12,6 +13,7 @@ class Station
     @name = name
     @trains = []
     @@stations << self
+    self.register_instance
   end
 
   #Может принимать поезда (по одному за раз)
