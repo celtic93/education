@@ -1,6 +1,8 @@
+require_relative 'instance_counter'
+
 class Route
   include InstanceCounter
-  
+
   attr_reader :stations, :last, :first
   #Имеет начальную и конечную станцию, а также список промежуточных станций. 
   #Начальная и конечная станции указываютсся при создании маршрута,

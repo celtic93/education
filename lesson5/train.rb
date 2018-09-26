@@ -14,7 +14,7 @@ class Train
 
 
   def self.find(num)
-    @@trains.select {|train| train.num == num}
+    @@trains.find {|train| train.num == num}
   end
 
   @@carriages_depot = {:cargo => [], :passenger => []}
