@@ -2,6 +2,7 @@ require_relative 'instance_counter'
 
 class Station
   include InstanceCounter
+  include Validation
   
   attr_reader :name
   
@@ -11,11 +12,18 @@ class Station
 
   @@stations = []
   #Имеет название, которое указывается при ее создании
-  def initialize(name)      
+  def initialize(name) 
     @name = name
+    validate!   
     @trains = []
     @@stations << self
     self.register_instance
+  end
+
+  def validate!
+    raise 'Такая станция уже есть' if @@stations.map {|station| station.name}.include? name
+    raise 'Название станции слишком короткое' if name.size < 2
+    true
   end
 
   #Может принимать поезда (по одному за раз)

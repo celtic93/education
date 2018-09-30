@@ -1,9 +1,11 @@
 require_relative 'manufacturer'
 require_relative 'instance_counter'
+require_relative 'validation'
 
 class Train
   include Manufacturer
   include InstanceCounter
+  include Validation
   #Может возвращать количество вагонов
   #Возвращать текущую станцию на основе маршрута
   attr_reader :carriages, :stations, :current_station, :num, :type, :carriages
@@ -12,6 +14,7 @@ class Train
   #Может набирать скорость
   attr_accessor :speed  
 
+  VALID_NUMBER = /^[a-z\d]{3}-?[a-z\d]{2}$/i
 
   def self.find(num)
     @@trains.find {|train| train.num == num}
@@ -25,10 +28,17 @@ class Train
   def initialize(num, type)      
     @num = num
     @type = type
+    validate!
     @speed = 0
     @carriages = []
     @@trains << self
     self.register_instance
+  end
+
+  def validate!
+    raise 'Неверный формат номера' if num.to_s !~ VALID_NUMBER
+    raise 'Неверный тип поезда (cargo или passenger)' unless [:cargo, :passenger].include?(@type)
+    true
   end
 
   #Может набирать скорость
@@ -45,7 +55,7 @@ class Train
   #метод просто увеличивает или уменьшает количество вагонов).
   #Прицепка/отцепка вагонов может осуществляться только если поезд не движется.
   def add_carriage(type)
-    return puts 'Stop the train!' unless @speed == 0
+    return 'Остановите поезд!' unless @speed == 0
 
     if @@carriages_depot[type].empty?
       @carriages << Carriage.new(type)
@@ -57,8 +67,8 @@ class Train
   end
 
   def remove_carriage
-    return puts 'Stop the train!' unless @speed == 0
-    return puts 'No carriages' if @carriages.empty?
+    return 'Остановите поезд!' unless @speed == 0
+    return 'У поезда нет вагонов' if @carriages.empty?
     
     carriage = @carriages.last
     @carriages.delete(carriage)
@@ -87,7 +97,7 @@ class Train
       @current_station = @stations[@index]
       @stations[@index].arrival(self)
     else
-      puts 'It is the last station'
+      return 'Это последняя станция'
     end
   end
 
@@ -98,7 +108,7 @@ class Train
       @current_station = @stations[@index]
       @stations[@index].arrival(self)
     else
-      puts 'It is the first station'
+      return 'Это первая станция'
     end
   end
 
@@ -111,7 +121,7 @@ class Train
     if @index+1 != @stations.size
       @stations[@index+1]
     else
-      puts 'It is the last station'
+      return 'Это последняя станция'
     end
   end
 
@@ -119,7 +129,7 @@ class Train
     if @index != 0
       @stations[@index-1]
     else
-      puts 'It is the first station'
+      return 'Это первая станция'
     end
   end
 end

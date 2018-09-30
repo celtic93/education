@@ -2,6 +2,7 @@ require_relative 'instance_counter'
 
 class Route
   include InstanceCounter
+  include Validation
 
   attr_reader :stations, :last, :first
   #Имеет начальную и конечную станцию, а также список промежуточных станций. 
@@ -10,8 +11,15 @@ class Route
   def initialize(first, last)
     @first = first
     @last = last
+    validate!
     @stations = [@first, @last]
     self.register_instance
+  end
+
+  def validate!
+    raise 'Название одной из станций слишком короткое' if first.size < 5 || last.size < 5
+    raise 'Названия станций не могут совпадать' if first == last
+    true
   end
 
   #Может добавлять промежуточную станцию в список

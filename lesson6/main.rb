@@ -13,6 +13,8 @@ require_relative 'instance_counter'
 @trains = []
 @routes = []
 
+VALID_NUMBER = /^[a-z\d]{3}-?[a-z\d]{2}$/i
+
 def main_trains_list
   @trains.each_with_index {|train, index| puts "#{index+1}. Поезд номер #{train.num}"}
 end
@@ -43,27 +45,24 @@ def main_add_station  #1. Создать станцию
 end
 
 def main_add_train  #2. Создать поезд
-  puts 'Введите номер поезда'
-  num = gets.to_i
-  if @trains.map {|train| train.num }.include? num
-    puts 'Такой номер уже есть'      
-  else
-    puts 'Выберитe тип поезда
-    1. Пассаржирский
-    2. Грузовой'
-    type_index = gets.to_i
-    if type_index == 1
-      train = PassengerTrain.new(num)
-      @trains << train
-      puts "Создан поезд #{train.num} типа #{train.type}"
-    elsif type_index == 2
-      train = CargoTrain.new(num)
-      @trains << train
-      puts "Создан поезд #{train.num} типа #{train.type}"
-    else
-      puts 'Неверный тип'
-    end 
-  end    
+    
+    begin
+      puts 'Введите номер поезда и тип поезда'
+      @num = gets.chomp
+      @type = gets.chomp.to_sym
+
+      raise 'Неверный формат номера. Номер - XXX(-)XX' if @num !~ VALID_NUMBER
+      raise 'Неверный тип поезда (cargo или passenger)' unless [:cargo, :passenger].include?(@type)
+      raise 'Поезд с таким номером уже есть' if @trains.map {|train| train.num }.include? @num
+    rescue Exception => e
+      puts e
+      retry
+    end
+
+    train = Train.new(@num, @type)
+    @trains << train
+    puts "Создан поезд #{train.num} типа #{train.type}"
+    
 end
 
 def main_add_route  #3. Создать маршрут
