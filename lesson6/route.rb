@@ -17,7 +17,6 @@ class Route
   end
 
   def validate!
-    raise 'Название одной из станций слишком короткое' if first.size < 5 || last.size < 5
     raise 'Названия станций не могут совпадать' if first == last
     true
   end

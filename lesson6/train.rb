@@ -38,6 +38,7 @@ class Train
   def validate!
     raise 'Неверный формат номера' if num.to_s !~ VALID_NUMBER
     raise 'Неверный тип поезда (cargo или passenger)' unless [:cargo, :passenger].include?(@type)
+    raise 'Поезд с таким номером уже есть' if @@trains.map {|train| train.num }.include? @num
     true
   end
 

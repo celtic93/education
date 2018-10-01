@@ -13,8 +13,6 @@ require_relative 'instance_counter'
 @trains = []
 @routes = []
 
-VALID_NUMBER = /^[a-z\d]{3}-?[a-z\d]{2}$/i
-
 def main_trains_list
   @trains.each_with_index {|train, index| puts "#{index+1}. Поезд номер #{train.num}"}
 end
@@ -33,58 +31,58 @@ def main_routes_list
 end
 
 def main_add_station  #1. Создать станцию
-  puts 'Введите название станции'
-  station_name = gets.chomp
-  if @stations.map {|station| station.name }.include? station_name
-    puts 'Такая станция уже есть'      
-  else
+
+  begin
+    puts 'Введите название станции'
+    station_name = gets.chomp
+
     station = Station.new(station_name)
-    @stations << station
-    puts "Создана станция #{station.name}"
-  end   
+  rescue Exception => e
+    puts e
+    retry
+  end
+    
+  @stations << station
+  puts "Создана станция #{station.name}"
 end
 
 def main_add_train  #2. Создать поезд
     
-    begin
-      puts 'Введите номер поезда и тип поезда'
-      @num = gets.chomp
-      @type = gets.chomp.to_sym
-
-      raise 'Неверный формат номера. Номер - XXX(-)XX' if @num !~ VALID_NUMBER
-      raise 'Неверный тип поезда (cargo или passenger)' unless [:cargo, :passenger].include?(@type)
-      raise 'Поезд с таким номером уже есть' if @trains.map {|train| train.num }.include? @num
-    rescue Exception => e
-      puts e
-      retry
-    end
+  begin
+    puts 'Введите номер поезда и тип поезда'
+    @num = gets.chomp
+    @type = gets.chomp.to_sym
 
     train = Train.new(@num, @type)
-    @trains << train
-    puts "Создан поезд #{train.num} типа #{train.type}"
-    
+  rescue Exception => e
+    puts e
+    retry
+  end
+
+  @trains << train
+  puts "Создан поезд #{train.num} типа #{train.type}"
 end
 
-def main_add_route  #3. Создать маршрут
-  puts 'Выберитe начальную и конечную станции маршрута'
-  main_stations_list
-  first = gets.to_i
-  last = gets.to_i
+def main_add_route  #3. Создать маршрут  
 
-  return puts "Первая и последняя не могу совпадать" if first == last
+  begin
+    puts 'Выберитe начальную и конечную станции маршрута'
+    main_stations_list
+    first = gets.to_i
+    last = gets.to_i
 
-  first_station = @stations[first-1]
-  last_station = @stations[last-1]
+    first_station = @stations[first-1]
+    last_station = @stations[last-1]
 
-  unless first_station && last_station 
-    puts "Станции не найдены"
-    return
-  end  
-
-  route = Route.new(@stations[first-1], @stations[last-1])
+    raise "Станции не найдены" unless first_station && last_station 
+    route = Route.new(@stations[first-1], @stations[last-1])
+  rescue Exception => e
+    puts e
+    retry
+  end
+  
   @routes << route
   puts "Создан маршрут #{route.first.name} - #{route.last.name}"
-  
 end
 
 def main_set_route  #4. Назначить маршрут поезду
