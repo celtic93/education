@@ -55,11 +55,11 @@ class Train
   #Может прицеплять/отцеплять вагоны (по одному вагону за операцию,
   #метод просто увеличивает или уменьшает количество вагонов).
   #Прицепка/отцепка вагонов может осуществляться только если поезд не движется.
-  def add_carriage(type)
+  def add_carriage(value, type)
     return 'Остановите поезд!' unless @speed == 0
 
     if @@carriages_depot[type].empty?
-      @carriages << Carriage.new(type)
+      type == :cargo ? @carriages << CargoCarriage.new(value) : @carriages << PassengerCarriage.new(value)
     else
       carriage = @@carriages_depot[type].last
       @carriages << carriage
@@ -131,6 +131,12 @@ class Train
       @stations[@index-1]
     else
       return 'Это первая станция'
+    end
+  end
+
+  def all_carriages_method(&block)
+    @carriages.each do |carriage|
+      block.call(carriage)
     end
   end
 end

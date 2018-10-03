@@ -1,10 +1,11 @@
 require_relative 'instance_counter'
+require_relative 'validation'
 
 class Station
   include InstanceCounter
   include Validation
   
-  attr_reader :name
+  attr_reader :name, :trains
   
   def self.all
     @@stations
@@ -45,5 +46,11 @@ class Station
   #Может возвращать список поездов на станции по типу (см. ниже): кол-во грузовых, пассажирских
   def trains_type(type)
     @trains.select {|train| train.type == type }
+  end
+
+  def all_trains_method(&block)
+    @trains.each do |train|
+      block.call(train)
+    end
   end
 end

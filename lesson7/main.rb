@@ -30,6 +30,18 @@ def main_routes_list
   @routes.each_with_index {|route, index| puts "#{index+1}. Маршрут #{route.first.name} - #{route.last.name}"}
 end
 
+def trains_with_carriages
+  @trains.each_with_index do |train, index|
+    puts "#{index+1} #{train.num}" if train.carriages.any?
+  end
+end
+
+def stations_with_trains
+  @stations.each_with_index do |station, index|
+    puts "#{index+1} #{station.name}" if station.trains.any?
+  end
+end
+
 def main_add_station  #1. Создать станцию
 
   begin
@@ -148,7 +160,14 @@ def main_add_carriage  #7. Добавить вагон к поезду
   train_index = gets.to_i
   train = @trains[train_index-1]
 
-  train.add_carriage(train.type)
+  if train.type == :passenger
+    puts 'Количество посадочных мест в вагоне?' 
+  else
+    puts 'Объем вагона?'
+  end
+  value = gets.to_i
+
+  train.add_carriage(value, train.type)
   puts "В поезд номер #{train.num} добавлен вагон типа #{train.type}"
 end
 
@@ -185,11 +204,64 @@ def main_train_move_backward  #10. Перемещать поезд по марш
 end
 
 def main_trains_on_station_list  #12. Cписок поездов на станции
-  puts 'Выберите станцию'
-  main_stations_list
-  station_index = gets.to_i
+  stations_with_trains
 
-  @stations[station_index-1].trains_list
+  station_index = gets.to_i
+  station = @stations[station_index-1]
+
+  station.all_trains_method do |train|
+    puts "Поезд номер #{train.num}, тип #{train.type}, кол-во вагонов #{train.carriages.size}"
+  end
+end
+
+def main_train_carriages_list  #13.  Выводить список вагонов у поезда
+  trains_with_carriages
+
+  train_index = gets.to_i
+  train = @trains[train_index-1]
+
+  if train.type == :passenger
+    @index = 0
+    train.all_carriages_method do |carriage|
+      puts "Вагон #{@index += 1}. Тип вагона #{carriage.type}, свободных мест #{carriage.empty_seats} занятых мест #{carriage.occupied_seats}"
+    end
+  else
+    @index = 0
+    train.all_carriages_method do |carriage|
+      puts "Вагон #{@index += 1}. Тип вагона #{carriage.type}, кол-во свободного объема #{carriage.unused_volume} занятого объема #{carriage.occupied_volume}"
+    end
+  end
+end
+
+def main_occupy  #14.  Занимать место или объем в вагоне
+  trains_with_carriages
+
+  train_index = gets.to_i
+  train = @trains[train_index-1]
+
+  puts 'Выберите вагон'
+  @index = 0
+  train.all_carriages_method do |carriage|
+    puts "Вагон номер #{@index += 1}, Тип вагона #{carriage.type}"
+  end
+
+  carriage_index = gets.to_i
+  carriage = train.carriages[carriage_index-1]
+
+  if carriage.type == :cargo
+    puts "Kол-во свободного объема #{carriage.unused_volume} занятого объема #{carriage.occupied_volume}. Сколько добавить объем?"
+    value = gets.to_i
+
+    return puts 'Столько не поместится' if value > carriage.unused_volume
+
+    carriage.occupy_volume(value)
+    puts "В вагон добавлено #{value} eдиниц объема. Kол-во свободного объема #{carriage.unused_volume} занятого объема #{carriage.occupied_volume}."
+  else
+    return puts 'Вагон битком' if carriage.empty_seats == 0
+
+    carriage.occupy_seat
+    puts "В вагоне занято одно место. Оставшихся мест #{carriage.empty_seats}" 
+  end
 end
 
 loop do 
@@ -206,6 +278,8 @@ loop do
     10. Перемещать поезд по маршруту назад
     11. Просмотреть список станций
     12. Cписок поездов на станции
+    13. Выводить список вагонов у поезда
+    14. Занимать место или объем в вагоне
     0. Закончить'
 
   choice = gets.to_i
@@ -237,6 +311,10 @@ loop do
     main_stations_list  
   when 12  #12. Cписок поездов на станции
     main_trains_on_station_list
+  when 13  #13. Выводить список вагонов у поезда
+    main_train_carriages_list
+  when 14  #14. Занимать место или объем в вагоне
+    main_occupy
   when 0
     exit
   end      
