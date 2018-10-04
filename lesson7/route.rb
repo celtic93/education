@@ -33,6 +33,6 @@ class Route
 
   #Может выводить список всех станций по-порядку от начальной до конечной
   def list_stations
-    @stations.each_with_index {|station, index| puts "#{index} #{station.name}"}
+    @stations.each_with_index {|station, index| puts "#{index+1} #{station.name}"}
   end
 end

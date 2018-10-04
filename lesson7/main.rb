@@ -24,6 +24,7 @@ end
 def main_trains_on_route_list
   @trains_on_route = @trains.select {|train| train.on_route?}
   @trains_on_route.each_with_index {|train, index| puts "#{index+1}. Поезд номер #{train.num}"} 
+
 end
 
 def main_routes_list
@@ -31,15 +32,23 @@ def main_routes_list
 end
 
 def trains_with_carriages
-  @trains.each_with_index do |train, index|
-    puts "#{index+1} #{train.num}" if train.carriages.any?
-  end
+  @trains_with_carriages = []
+  @trains.each {|train| @trains_with_carriages << train if train.carriages.any?}
+  @trains_with_carriages.each_with_index {|train, index| puts "#{index+1}. Поезд номер #{train.num}"}
+end
+
+def trains_with_carriages_any?
+  @trains.select {|train| train.carriages.any?}.any?
+end
+
+def trains_on_route_any?
+  @trains.select {|train| train.on_route?}.any?
 end
 
 def stations_with_trains
-  @stations.each_with_index do |station, index|
-    puts "#{index+1} #{station.name}" if station.trains.any?
-  end
+  @stations_with_trains = []
+  @stations.each {|station| @stations_with_trains << station if station.trains.any?}
+  @stations_with_trains.each_with_index {|station, index| puts "#{index+1}. #{station.name}"}
 end
 
 def main_add_station  #1. Создать станцию
@@ -61,7 +70,7 @@ end
 def main_add_train  #2. Создать поезд
     
   begin
-    puts 'Введите номер поезда и тип поезда'
+    puts 'Введите номер поезда (XXX(-)XX) и тип поезда (cargo или passenger)'
     @num = gets.chomp
     @type = gets.chomp.to_sym
 
@@ -76,7 +85,7 @@ def main_add_train  #2. Создать поезд
 end
 
 def main_add_route  #3. Создать маршрут  
-
+  return puts 'Должно быть как минимум 2 станции' unless @stations.size > 1
   begin
     puts 'Выберитe начальную и конечную станции маршрута'
     main_stations_list
@@ -98,67 +107,81 @@ def main_add_route  #3. Создать маршрут
 end
 
 def main_set_route  #4. Назначить маршрут поезду
-  puts 'Выберитe поезд'
-  main_trains_list
-  train_index = gets.to_i
-    
-  puts 'Выберитe маршрут'
-  main_routes_list
-  route_index = gets.to_i
-    
-  unless (1..@trains.size).include?(train_index) && (1..@routes.size).include?(route_index)
-    puts "Введите правильные цифры"
-  else
-    train = @trains[train_index-1]
-    route = @routes[route_index-1]
-    train.set_route(route)
-    puts "Поезд номер #{train.num} поедет по маршруту #{route.first.name} - #{route.last.name}"
-  end 
-end
+  return puts 'Нет маршрутов на железной дороге' unless @routes.any?
+  return puts 'Нет поездов на железной дороге' unless @trains.any?
 
-def main_route_add_station  #5. Добавить станцию в маршрут
-  puts 'Выберитe маршрут'
-  main_routes_list
-  route_index = gets.to_i
-
-  puts 'Какую станцию добавить'
-  main_stations_list
-  station_index = gets.to_i
-
-  unless (1..@stations.size).include?(station_index) && (1..@routes.size).include?(route_index)
-    puts "Введите правильные цифры"
-  else
-    route = @routes[route_index-1]
-    station = @stations[station_index-1]
-    route.add_station(station)
-    puts "Станция #{station.name} добавлена в маршрут #{route.first.name} - #{route.last.name}"
-  end  
-end
-
-def main_route_delete_station  #6. Удалить станцию из маршрута
-  puts 'Выберитe маршрут'
-  main_routes_list
-  route_index = gets.to_i
-
-  puts 'Какую станцию удалить'
-  @routes[route_index-1].list_stations
-  station_index = gets.to_i
-
-  unless (1..@stations.size).include?(station_index) && (1..@routes.size).include?(route_index)
-    puts "Введите правильные цифры"
-  else
-    route = @routes[route_index-1]
-    station = @stations[station_index-1]
-    route.delete_station(station)
-    puts "Станция #{station.name} удалена из маршрута #{route.first.name} - #{route.last.name}"
-  end 
-end
-
-def main_add_carriage  #7. Добавить вагон к поезду
   puts 'Выберитe поезд'
   main_trains_list
   train_index = gets.to_i
   train = @trains[train_index-1]
+  raise 'Внимательней выберите поезд' if train.nil?
+    
+  puts 'Выберитe маршрут'
+  main_routes_list
+  route_index = gets.to_i
+  route = @routes[route_index-1]
+  raise 'Внимательней выберите маршрут' if route.nil?
+
+  train.set_route(route)
+  puts "Поезд номер #{train.num} поедет по маршруту #{route.first.name} - #{route.last.name}"
+rescue Exception => e
+  puts e
+  retry 
+end
+
+def main_route_add_station  #5. Добавить станцию в маршрут
+  return puts 'Нет маршрутов на железной дороге' unless @routes.any?
+  return puts 'Нет станций на железной дороге' unless @stations.any?
+
+  puts 'Выберитe маршрут'
+  main_routes_list
+  route_index = gets.to_i
+  route = @routes[route_index-1]
+  raise 'Внимательней выберите маршрут' if route.nil?
+
+  puts 'Какую станцию добавить'
+  main_stations_list
+  station_index = gets.to_i
+  station = @stations[station_index-1]
+  raise 'Внимательней выберите станцию' if station.nil?
+  raise 'Cтанция уже добавлена в маршрут' if route.stations.include?(station)
+
+  route.add_station(station)
+  puts "Станция #{station.name} добавлена в маршрут #{route.first.name} - #{route.last.name}"
+rescue Exception => e
+  puts e
+  retry     
+end
+
+def main_route_delete_station  #6. Удалить станцию из маршрута
+  return puts 'Нет маршрутов на железной дороге' unless @routes.any?
+  puts 'Выберитe маршрут'
+  main_routes_list
+  route_index = gets.to_i
+  route = @routes[route_index-1]
+  raise 'Внимательней выберите маршрут' if route.nil?
+
+  puts 'Какую станцию удалить'
+  @routes[route_index-1].list_stations
+  station_index = gets.to_i
+  station = @stations[station_index-1]
+  raise 'Внимательней выберите станцию' if station.nil?
+ 
+  route.delete_station(station)
+  puts "Станция #{station.name} удалена из маршрута #{route.first.name} - #{route.last.name}"
+rescue Exception => e
+  puts e
+  retry   
+end
+
+def main_add_carriage  #7. Добавить вагон к поезду
+  return puts 'Нет поездов на железной дороге' unless @trains.any?
+  puts 'Выберитe поезд'
+  main_trains_list
+  train_index = gets.to_i
+  train = @trains[train_index-1]
+
+  raise 'Внимательней выберите поезд' if train.nil?
 
   if train.type == :passenger
     puts 'Количество посадочных мест в вагоне?' 
@@ -169,56 +192,82 @@ def main_add_carriage  #7. Добавить вагон к поезду
 
   train.add_carriage(value, train.type)
   puts "В поезд номер #{train.num} добавлен вагон типа #{train.type}"
+rescue Exception => e
+  puts e
+  retry  
 end
 
 def main_remove_carriage  #8. Отцепить вагон от поезда
-  puts 'Выберитe поезд'
-  main_trains_list
-  train_index = gets.to_i
-  train = @trains[train_index-1]
+  return puts 'Нет поездов с вагонами на железной дороге' unless trains_with_carriages_any?
+  puts 'Выберите поезд'
+  trains_with_carriages
 
-  return puts 'У поезда нет вагонов' if train.carriages.empty?
+  train_index = gets.to_i
+  train = @trains_with_carriages[train_index-1]
+  raise 'Внимательней выберите поезд' if train.nil?
 
   train.remove_carriage
   puts "Из поезда номер #{train.num} удален вагон типа #{train.type}"
+rescue Exception => e
+  puts e
 end
 
 def main_train_move_forward  #9. Перемещать поезд по маршруту вперед
+  return puts 'Нет поездов на маршруте' unless trains_on_route_any?
   puts 'Выберите поезд'
   main_trains_on_route_list
   train_index = gets.to_i
   train = @trains_on_route[train_index-1]
+
+  raise 'Внимательней выберите поезд' if train.nil?
 
   train.move_forward
   puts "Поезд номер #{train.num} проехал вперед на 1 станцию"
+rescue Exception => e
+  puts e
 end
 
 def main_train_move_backward  #10. Перемещать поезд по маршруту назад
+  return puts 'Нет поездов на маршруте' unless trains_on_route_any?
   puts 'Выберите поезд'
   main_trains_on_route_list
   train_index = gets.to_i
   train = @trains_on_route[train_index-1]
 
+  raise 'Внимательней выберите поезд' if train.nil?
+
+  
   train.move_backward
   puts "Поезд номер #{train.num} проехал назад на 1 станцию"
+rescue Exception => e
+  puts e 
 end
 
 def main_trains_on_station_list  #12. Cписок поездов на станции
+  return puts 'Нет станций с поездами' unless @stations.select {|station| station.trains.any?}.any?
   stations_with_trains
 
   station_index = gets.to_i
-  station = @stations[station_index-1]
+  station = @stations_with_trains[station_index-1]
+
+  raise 'Внимательней выберите станцию' if station.nil?
 
   station.all_trains_method do |train|
     puts "Поезд номер #{train.num}, тип #{train.type}, кол-во вагонов #{train.carriages.size}"
   end
+rescue Exception => e
+  puts e
+  retry 
 end
 
 def main_train_carriages_list  #13.  Выводить список вагонов у поезда
+  return puts 'Нет поездов с вагонами на железной дороге' unless trains_with_carriages_any?
+  puts 'Выберите поезд'
   trains_with_carriages
 
   train_index = gets.to_i
-  train = @trains[train_index-1]
+  train = @trains_with_carriages[train_index-1]
+  raise 'Внимательней выберите поезд' if train.nil?
 
   if train.type == :passenger
     @index = 0
@@ -231,13 +280,21 @@ def main_train_carriages_list  #13.  Выводить список вагоно�
       puts "Вагон #{@index += 1}. Тип вагона #{carriage.type}, кол-во свободного объема #{carriage.unused_volume} занятого объема #{carriage.occupied_volume}"
     end
   end
+rescue Exception => e
+  puts e
+  retry 
 end
 
-def main_occupy  #14.  Занимать место или объем в вагоне
+def main_occupy  #14.  Занимать место или объем в вагоне 
+  
+  return puts 'Нет вагонов на железной дороге' unless trains_with_carriages_any?
+  puts 'Выберите поезд'
   trains_with_carriages
 
   train_index = gets.to_i
-  train = @trains[train_index-1]
+  train = @trains_with_carriages[train_index-1]
+
+  raise 'Внимательней выберите поезд' if train.nil?
 
   puts 'Выберите вагон'
   @index = 0
@@ -248,20 +305,26 @@ def main_occupy  #14.  Занимать место или объем в ваго
   carriage_index = gets.to_i
   carriage = train.carriages[carriage_index-1]
 
+  raise 'Внимательней выберите вагон' if carriage.nil?
+
   if carriage.type == :cargo
     puts "Kол-во свободного объема #{carriage.unused_volume} занятого объема #{carriage.occupied_volume}. Сколько добавить объем?"
     value = gets.to_i
 
-    return puts 'Столько не поместится' if value > carriage.unused_volume
+    raise 'Столько не поместится' if value > carriage.unused_volume
 
     carriage.occupy_volume(value)
     puts "В вагон добавлено #{value} eдиниц объема. Kол-во свободного объема #{carriage.unused_volume} занятого объема #{carriage.occupied_volume}."
   else
-    return puts 'Вагон битком' if carriage.empty_seats == 0
+    raise 'Вагон битком' if carriage.empty_seats == 0
 
     carriage.occupy_seat
     puts "В вагоне занято одно место. Оставшихся мест #{carriage.empty_seats}" 
   end
+
+rescue Exception => e
+  puts e
+  retry
 end
 
 loop do 
@@ -307,6 +370,7 @@ loop do
   when 10 #10. Перемещать поезд по маршруту назад
     main_train_move_backward
   when 11  #11. Просмотреть список станций
+    return puts 'Нет станций на железной дороге' unless @stations.any?
     puts 'Список станций'
     main_stations_list  
   when 12  #12. Cписок поездов на станции

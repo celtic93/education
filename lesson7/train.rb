@@ -98,7 +98,7 @@ class Train
       @current_station = @stations[@index]
       @stations[@index].arrival(self)
     else
-      return 'Это последняя станция'
+      raise 'Это последняя станция'
     end
   end
 
@@ -109,7 +109,7 @@ class Train
       @current_station = @stations[@index]
       @stations[@index].arrival(self)
     else
-      return 'Это первая станция'
+      raise 'Это первая станция'
     end
   end
 
