@@ -14,7 +14,10 @@ class Carriage
   end
 
   def validate!
-    raise 'Неизвестный тип. Выберите :cargo или :passenger' unless [:cargo, :passenger].include? type 
+    unless %i[cargo passenger].include? type
+      raise 'Неизвестный тип. Выберите :cargo или :passenger'
+    end
+
     true
   end
 end

@@ -5,34 +5,33 @@ class Route
   include Validation
 
   attr_reader :stations, :last, :first
-  #Имеет начальную и конечную станцию, а также список промежуточных станций. 
-  #Начальная и конечная станции указываютсся при создании маршрута,
-  #а промежуточные могут добавляться между ними.
+
   def initialize(first, last)
     @first = first
     @last = last
     validate!
     @stations = [@first, @last]
-    self.register_instance
+    register_instance
   end
 
   def validate!
     raise 'Названия станций не могут совпадать' if first == last
+
     true
   end
 
-  #Может добавлять промежуточную станцию в список
+  # Can add an intermediate station to the list
   def add_station(station)
     @stations.insert(-2, station)
   end
 
-  #Может удалять промежуточную станцию из списка
+  # Can remove an intermediate station from the list.
   def delete_station(station)
     @stations.delete(station)
   end
 
-  #Может выводить список всех станций по-порядку от начальной до конечной
+  # It can display a list of all stations in order from initial to final
   def list_stations
-    @stations.each_with_index {|station, index| puts "#{index+1} #{station.name}"}
+    @stations.each_with_index { |station, i| puts "#{i + 1} #{station.name}" }
   end
 end

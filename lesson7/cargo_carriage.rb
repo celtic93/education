@@ -1,4 +1,10 @@
+require_relative 'carriage'
+require_relative 'manufacturer'
+require_relative 'validation'
+
 class CargoCarriage < Carriage
+  attr_reader :occupied_volume
+
   def initialize(value, type = :cargo)
     super
     @occupied_volume = 0
@@ -6,12 +12,11 @@ class CargoCarriage < Carriage
 
   def occupy_volume(cargo)
     return 'Вагон заполнен' if @occupied_volume == @value
-    return "В вагоне осталось #{self.unused_volume} единиц объема" if @occupied_volume + cargo > @value
-    @occupied_volume += cargo
-  end
+    if @occupied_volume + cargo > @value
+      return "В вагоне осталось #{unused_volume} единиц объема"
+    end
 
-  def occupied_volume
-    @occupied_volume
+    @occupied_volume += cargo
   end
 
   def unused_volume
