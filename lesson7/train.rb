@@ -82,7 +82,7 @@ class Train
   # It can take a route (object of class Route). Upon appointment
   # route of the train, the train is automatically
   # placed on the first station in the route
-  def set_route(route)
+  def add_route(route)
     @stations[@index].departure(self) unless @current_station.nil?
     @stations = route.stations
     @index = 0
