@@ -3,8 +3,12 @@ require_relative 'instance_counter'
 class Route
   include InstanceCounter
   include Validation
+  extend Accessors
 
   attr_reader :stations, :last, :first
+
+  validate :first, :presence
+  validate :last, :presence
 
   def initialize(first, last)
     @first = first
@@ -15,6 +19,7 @@ class Route
   end
 
   def validate!
+    super
     raise 'Названия станций не могут совпадать' if first == last
 
     true

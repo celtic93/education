@@ -3,11 +3,13 @@ require_relative 'instance_counter'
 require_relative 'validation'
 require_relative 'cargo_carriage'
 require_relative 'passenger_carriage'
+require_relative 'accessors'
 
 class Train
   include Manufacturer
   include InstanceCounter
   include Validation
+  extend Accessors
 
   VALID_NUMBER = /^[a-z\d]{3}-?[a-z\d]{2}$/i
   # Return current station based on route
@@ -15,6 +17,9 @@ class Train
   # Return current speed
   # Can gain speed
   attr_accessor :speed
+
+  validate :type, :presence
+  validate :num, :format, VALID_NUMBER
 
   @@carriages_depot = { cargo: [], passenger: [] }
 
@@ -35,6 +40,7 @@ class Train
   end
 
   def validate!
+    super
     raise 'Неверный формат номера' if num.to_s !~ VALID_NUMBER
     unless %i[cargo passenger].include?(@type)
       raise 'Неверный тип поезда (cargo или passenger)'

@@ -1,11 +1,16 @@
 require_relative 'instance_counter'
 require_relative 'validation'
+require_relative 'accessors'
 
 class Station
   include InstanceCounter
   include Validation
+  extend Accessors
 
   attr_reader :name, :trains
+
+  validate :name, :presence
+  validate :name, :type, String
 
   def self.all
     @@stations
@@ -22,6 +27,7 @@ class Station
   end
 
   def validate!
+    super
     raise 'Такая станция уже есть' if @@stations.map(&:name).include? name
     raise 'Название станции слишком короткое' if name.size < 2
 
