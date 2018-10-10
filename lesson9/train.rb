@@ -20,6 +20,7 @@ class Train
 
   validate :type, :presence
   validate :num, :format, VALID_NUMBER
+  validate :type, :type, Symbol
 
   @@carriages_depot = { cargo: [], passenger: [] }
 

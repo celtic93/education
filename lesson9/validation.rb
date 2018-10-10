@@ -5,17 +5,17 @@ module Validation
   end
 
   module ClassMethods
-    attr_reader :validations
+    attr_accessor :validations
 
     def validate(name, type, parameters = nil)
-      @validations ||= []
-      @validations << { name: name, type: type, parameters: parameters }
+      self.validations ||= []
+      self.validations << { name: name, type: type, parameters: parameters }
     end
   end
 
   module InstanceMethods
     def validate!
-      return if @validations.nil?
+      return if self.class.validations.nil?
       self.class.validations.each do |validation|
         @value = instance_variable_get("@#{validation[:name]}")
         send("validate_#{validation[:type]}".to_sym, @value, validation[:parameters])
@@ -39,8 +39,8 @@ module Validation
       raise 'Невалидный номер' if name.to_s !~ format
     end
 
-    def validate_type(name, type, *_parameters)
-      raise 'Не тот тип' unless name.is_a?(type)
+    def validate_type(name, type)
+      raise "Не тот тип #{name}" unless name.is_a?(type)
     end
   end
 end
