@@ -7,8 +7,8 @@ class Route
 
   attr_reader :stations, :last, :first
 
-  validate :first, :validate_presence
-  validate :last, :validate_presence
+  validate :first, :presence
+  validate :last, :presence
 
   def initialize(first, last)
     @first = first

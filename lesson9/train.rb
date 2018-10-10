@@ -18,8 +18,8 @@ class Train
   # Can gain speed
   attr_accessor :speed
 
-  validate :type, :validate_presence
-  validate :num, :validate_format, VALID_NUMBER
+  validate :type, :presence
+  validate :num, :format, VALID_NUMBER
 
   @@carriages_depot = { cargo: [], passenger: [] }
 
@@ -45,9 +45,9 @@ class Train
     unless %i[cargo passenger].include?(@type)
       raise 'Неверный тип поезда (cargo или passenger)'
     end
-    index = 0
-    if index == 0
-      index += 1
+    @validate_index ||= 0
+    if @validate_index == 0
+      @validate_index += 1
       raise 'Поезд с таким номером уже есть' if @@trains.map(&:num).include? @num
     end
   end

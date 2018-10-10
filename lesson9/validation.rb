@@ -15,11 +15,10 @@ module Validation
 
   module InstanceMethods
     def validate!
-      unless @validations.nil?
-        self.class.validations.each do |validation|
-          value = instance_variable_get("@#{validation[:name]}")
-          send(validation[:type].to_sym, value, validation[:parameters])
-        end
+      return if @validations.nil?
+      self.class.validations.each do |validation|
+        @value = instance_variable_get("@#{validation[:name]}")
+        send("validate_#{validation[:type]}".to_sym, @value, validation[:parameters])
       end
     end
 
@@ -37,7 +36,7 @@ module Validation
     end
 
     def validate_format(name, format)
-      raise 'Неверный формат номера' if name.to_s !~ format
+      raise 'Невалидный номер' if name.to_s !~ format
     end
 
     def validate_type(name, type, *_parameters)

@@ -9,7 +9,7 @@ class Carriage
 
   attr_reader :type
 
-  validate :type, :validate_presence
+  validate :type, :presence
 
   def initialize(value, type)
     @type = type
