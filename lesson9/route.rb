@@ -7,8 +7,8 @@ class Route
 
   attr_reader :stations, :last, :first
 
-  validate :first, :presence
-  validate :last, :presence
+  validate :first, :validate_presence
+  validate :last, :validate_presence
 
   def initialize(first, last)
     @first = first
@@ -21,8 +21,6 @@ class Route
   def validate!
     super
     raise 'Названия станций не могут совпадать' if first == last
-
-    true
   end
 
   # Can add an intermediate station to the list

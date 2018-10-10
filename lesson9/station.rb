@@ -9,8 +9,8 @@ class Station
 
   attr_reader :name, :trains
 
-  validate :name, :presence
-  validate :name, :type, String
+  validate :name, :validate_presence
+  validate :name, :validate_type, String
 
   def self.all
     @@stations
@@ -28,10 +28,12 @@ class Station
 
   def validate!
     super
-    raise 'Такая станция уже есть' if @@stations.map(&:name).include? name
+    index = 0
+    if index == 0
+      index += 1
+      raise 'Такая станция уже есть' if @@stations.map(&:name).include? name
+    end    
     raise 'Название станции слишком короткое' if name.size < 2
-
-    true
   end
 
   # Can take trains (one at a time)

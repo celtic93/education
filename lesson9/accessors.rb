@@ -1,4 +1,6 @@
 module Accessors
+  attr_reader :history
+
   def attr_accessor_with_history(*names)
     names.each do |name|
       var_name = "@#{name}".to_sym
@@ -9,7 +11,12 @@ module Accessors
         @history[name] ||= []
         @history[name] << value
       end
-      define_method("#{name}_history".to_sym) { @history[name] }
+      define_method("#{name}_history".to_sym) do
+        raise 'Нет истории' if @history.nil? || !@history.has_key?(name) 
+        @history[name]
+      rescue Exception => e
+        puts e
+      end
     end
   end
 

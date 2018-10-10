@@ -9,7 +9,7 @@ class Carriage
 
   attr_reader :type
 
-  validate :type, :presence
+  validate :type, :validate_presence
 
   def initialize(value, type)
     @type = type
@@ -22,7 +22,5 @@ class Carriage
     unless %i[cargo passenger].include? type
       raise 'Неизвестный тип. Выберите :cargo или :passenger'
     end
-
-    true
   end
 end
